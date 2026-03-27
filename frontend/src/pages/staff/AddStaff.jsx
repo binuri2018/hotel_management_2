@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { register } from '../services/authService';
+import { useNavigate } from 'react-router-dom';
+import { registerStaff } from '../../services/authService';
 
-const Register = () => {
+const AddStaff = () => {
   const [formData, setFormData] = useState({
     username: '',
     password: '',
     confirmPassword: '',
     email: '',
+    role: 'STAFF',
   });
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -23,8 +25,8 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
-    // Validation
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
@@ -38,13 +40,26 @@ const Register = () => {
     setLoading(true);
 
     try {
-      await register(formData.username, formData.password, formData.email);
-      navigate('/dashboard');
+      const result = await registerStaff(
+        formData.username,
+        formData.password,
+        formData.email,
+        formData.role
+      );
+      setSuccess(`User "${result.username}" created successfully as ${result.role}`);
+      setFormData({
+        username: '',
+        password: '',
+        confirmPassword: '',
+        email: '',
+        role: 'STAFF',
+      });
     } catch (err) {
-      const errorMessage = err.response?.data?.message || 
-                          err.response?.data?.error || 
-                          err.message || 
-                          'Registration failed. Username or email may already exist.';
+      const errorMessage =
+        err.response?.data?.message ||
+        err.response?.data?.error ||
+        err.message ||
+        'Registration failed. Username or email may already exist.';
       setError(errorMessage);
     } finally {
       setLoading(false);
@@ -52,16 +67,27 @@ const Register = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-blue-700">
-      <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
-          Ocean View Resort
-        </h2>
-        <p className="text-center text-gray-600 mb-8">Create Admin Account</p>
-        
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold text-gray-800">Add New Staff</h2>
+        <button
+          onClick={() => navigate('/staff')}
+          className="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded transition"
+        >
+          ← Back to Staff List
+        </button>
+      </div>
+
+      <div className="bg-white rounded-lg shadow p-6 max-w-lg">
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
             {error}
+          </div>
+        )}
+
+        {success && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+            {success}
           </div>
         )}
 
@@ -96,6 +122,21 @@ const Register = () => {
 
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
+              Role *
+            </label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="STAFF">Staff</option>
+              <option value="ADMIN">Admin</option>
+            </select>
+          </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2">
               Password *
             </label>
             <input
@@ -124,24 +165,26 @@ const Register = () => {
             />
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50"
-          >
-            {loading ? 'Creating Account...' : 'Register'}
-          </button>
+          <div className="flex gap-3">
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded focus:outline-none focus:shadow-outline disabled:opacity-50"
+            >
+              {loading ? 'Creating...' : 'Create User'}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/staff')}
+              className="bg-gray-300 hover:bg-gray-400 text-gray-700 font-bold py-2 px-6 rounded"
+            >
+              Cancel
+            </button>
+          </div>
         </form>
-
-        <p className="text-center text-sm text-gray-600 mt-4">
-          Already have an account?{' '}
-          <Link to="/login" className="text-blue-600 hover:text-blue-800 font-semibold">
-            Login here
-          </Link>
-        </p>
       </div>
     </div>
   );
 };
 
-export default Register;
+export default AddStaff;

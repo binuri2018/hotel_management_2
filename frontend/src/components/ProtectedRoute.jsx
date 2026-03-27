@@ -1,10 +1,20 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
-import { isAuthenticated } from '../services/authService';
+import { isAuthenticated, isAdmin } from '../services/authService';
 
-const ProtectedRoute = ({ children }) => {
+export const ProtectedRoute = ({ children }) => {
   if (!isAuthenticated()) {
     return <Navigate to="/login" replace />;
+  }
+  return children;
+};
+
+export const AdminRoute = ({ children }) => {
+  if (!isAuthenticated()) {
+    return <Navigate to="/login" replace />;
+  }
+  if (!isAdmin()) {
+    return <Navigate to="/dashboard" replace />;
   }
   return children;
 };

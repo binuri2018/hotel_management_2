@@ -1,7 +1,7 @@
 import api from './api';
 
-export const login = async (username, password) => {
-  const response = await api.post('/auth/login', { username, password });
+export const login = async (usernameOrEmail, password) => {
+  const response = await api.post('/auth/login', { usernameOrEmail, password });
   if (response.data.token) {
     localStorage.setItem('token', response.data.token);
     localStorage.setItem('user', JSON.stringify(response.data));
@@ -9,12 +9,8 @@ export const login = async (username, password) => {
   return response.data;
 };
 
-export const register = async (username, password, email, role = 'ADMIN') => {
+export const registerStaff = async (username, password, email, role = 'STAFF') => {
   const response = await api.post('/auth/register', { username, password, email, role });
-  if (response.data.token) {
-    localStorage.setItem('token', response.data.token);
-    localStorage.setItem('user', JSON.stringify(response.data));
-  }
   return response.data;
 };
 
@@ -28,6 +24,15 @@ export const getCurrentUser = () => {
   return user ? JSON.parse(user) : null;
 };
 
+export const getUserRole = () => {
+  const user = getCurrentUser();
+  return user ? user.role : null;
+};
+
 export const isAuthenticated = () => {
   return !!localStorage.getItem('token');
+};
+
+export const isAdmin = () => {
+  return getUserRole() === 'ADMIN';
 };

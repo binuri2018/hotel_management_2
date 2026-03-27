@@ -27,14 +27,17 @@ public class AuthService {
     private AuthenticationManager authenticationManager;
 
     public LoginResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword())
-        );
-
-        User user = userRepository.findByUsername(request.getUsername())
+        // Resolve the user by username or email
+        User user = userRepository.findByUsername(request.getUsernameOrEmail())
+                .or(() -> userRepository.findByEmail(request.getUsernameOrEmail()))
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
-        String token = jwtUtil.generateToken(user.getUsername());
+        // Authenticate using the resolved username
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(user.getUsername(), request.getPassword())
+        );
+
+        String token = jwtUtil.generateToken(user.getUsername(), user.getRole());
 
         return new LoginResponse(token, user.getUsername(), user.getRole());
     }
@@ -52,17 +55,25 @@ public class AuthService {
             }
         }
 
+        // Validate role - only ADMIN or STAFF allowed
+        String role = request.getRole();
+        if (role == null || role.isEmpty()) {
+            role = "STAFF";
+        }
+        if (!role.equals("ADMIN") && !role.equals("STAFF")) {
+            throw new RuntimeException("Invalid role. Must be ADMIN or STAFF");
+        }
+
         // Create new user
         User user = new User();
         user.setUsername(request.getUsername());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
         user.setEmail(request.getEmail());
-        user.setRole(request.getRole() != null ? request.getRole() : "ADMIN");
+        user.setRole(role);
 
         userRepository.save(user);
 
-        // Generate token and return response
-        String token = jwtUtil.generateToken(user.getUsername());
-        return new LoginResponse(token, user.getUsername(), user.getRole());
+        // Return response (no auto-login token for newly created staff)
+        return new LoginResponse(null, user.getUsername(), user.getRole());
     }
 }

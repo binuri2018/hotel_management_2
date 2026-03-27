@@ -2,13 +2,12 @@ import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline, Box } from '@mui/material';
 import { isAuthenticated } from './services/authService';
-import ProtectedRoute from './components/ProtectedRoute';
+import ProtectedRoute, { AdminRoute } from './components/ProtectedRoute';
 import Navbar from './components/Navbar';
 import Sidebar from './components/Sidebar';
 
 // Pages
 import Login from './pages/Login';
-import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import RoomsList from './pages/rooms/RoomsList';
 import AddRoom from './pages/rooms/AddRoom';
@@ -19,6 +18,8 @@ import EditCustomer from './pages/customers/EditCustomer';
 import BookingList from './pages/bookings/BookingList';
 import AddBooking from './pages/bookings/AddBooking';
 import EditBooking from './pages/bookings/EditBooking';
+import StaffList from './pages/staff/StaffList';
+import AddStaff from './pages/staff/AddStaff';
 
 // MUI Theme
 const theme = createTheme({
@@ -39,10 +40,6 @@ function App() {
           <Route
             path="/login"
             element={isAuthenticated() ? <Navigate to="/dashboard" replace /> : <Login />}
-          />
-          <Route
-            path="/register"
-            element={isAuthenticated() ? <Navigate to="/dashboard" replace /> : <Register />}
           />
 
           {/* Protected Routes */}
@@ -72,6 +69,9 @@ function App() {
                         <Route path="/bookings" element={<BookingList />} />
                         <Route path="/bookings/add" element={<AddBooking />} />
                         <Route path="/bookings/edit/:id" element={<EditBooking />} />
+                        {/* Admin-only routes */}
+                        <Route path="/staff" element={<AdminRoute><StaffList /></AdminRoute>} />
+                        <Route path="/staff/add" element={<AdminRoute><AddStaff /></AdminRoute>} />
                         <Route path="/" element={<Navigate to="/dashboard" replace />} />
                       </Routes>
                     </Box>

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { login } from '../services/authService';
 
 const Login = () => {
-  const [username, setUsername] = useState('');
+  const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -15,10 +15,10 @@ const Login = () => {
     setLoading(true);
 
     try {
-      await login(username, password);
+      await login(usernameOrEmail, password);
       navigate('/dashboard');
     } catch (err) {
-      setError('Invalid username or password');
+      setError('Invalid username/email or password');
     } finally {
       setLoading(false);
     }
@@ -30,7 +30,7 @@ const Login = () => {
         <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">
           Ocean View Resort
         </h2>
-        <p className="text-center text-gray-600 mb-8">Admin Login</p>
+        <p className="text-center text-gray-600 mb-8">Staff Login</p>
         
         {error && (
           <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
@@ -41,13 +41,14 @@ const Login = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
-              Username
+              Username or Email
             </label>
             <input
               type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={usernameOrEmail}
+              onChange={(e) => setUsernameOrEmail(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+              placeholder="Enter username or email"
               required
             />
           </div>
@@ -76,13 +77,6 @@ const Login = () => {
 
         <p className="text-center text-sm text-gray-500 mt-4">
           Default: admin / admin123
-        </p>
-
-        <p className="text-center text-sm text-gray-600 mt-4">
-          Don't have an account?{' '}
-          <Link to="/register" className="text-blue-600 hover:text-blue-800 font-semibold">
-            Register here
-          </Link>
         </p>
       </div>
     </div>
