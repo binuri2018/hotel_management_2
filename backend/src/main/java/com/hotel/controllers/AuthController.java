@@ -39,6 +39,18 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/register-admin")
+    public ResponseEntity<?> registerAdmin(@RequestBody RegisterRequest request) {
+        try {
+            request.setRole("ADMIN");
+            LoginResponse response = authService.register(request);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new ErrorResponse(e.getMessage()));
+        }
+    }
+
     // Inner record for error response
     private record ErrorResponse(String message) {
     }

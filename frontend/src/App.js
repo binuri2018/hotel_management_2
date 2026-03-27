@@ -8,6 +8,7 @@ import Sidebar from './components/Sidebar';
 
 // Pages
 import Login from './pages/Login';
+import AdminRegister from './pages/AdminRegister';
 import Dashboard from './pages/Dashboard';
 import RoomsList from './pages/rooms/RoomsList';
 import AddRoom from './pages/rooms/AddRoom';
@@ -40,6 +41,10 @@ function App() {
           <Route
             path="/login"
             element={isAuthenticated() ? <Navigate to="/dashboard" replace /> : <Login />}
+          />
+          <Route
+            path="/register"
+            element={isAuthenticated() ? <Navigate to="/dashboard" replace /> : <AdminRegister />}
           />
 
           {/* Protected Routes */}

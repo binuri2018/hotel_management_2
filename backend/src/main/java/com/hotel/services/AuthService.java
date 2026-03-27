@@ -73,7 +73,12 @@ public class AuthService {
 
         userRepository.save(user);
 
-        // Return response (no auto-login token for newly created staff)
-        return new LoginResponse(null, user.getUsername(), user.getRole());
+        // Return token if Admin (for auto-login upon registration)
+        String token = null;
+        if ("ADMIN".equals(user.getRole())) {
+            token = jwtUtil.generateToken(user.getUsername(), user.getRole());
+        }
+        
+        return new LoginResponse(token, user.getUsername(), user.getRole());
     }
 }

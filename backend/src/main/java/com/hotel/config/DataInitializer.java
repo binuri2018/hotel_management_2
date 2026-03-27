@@ -1,30 +1,14 @@
 package com.hotel.config;
 
-import com.hotel.models.User;
-import com.hotel.repositories.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
 public class DataInitializer implements CommandLineRunner {
-    @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
 
     @Override
     public void run(String... args) {
-        if (userRepository.findByUsername("admin").isEmpty()) {
-            User admin = new User();
-            admin.setUsername("admin");
-            admin.setPassword(passwordEncoder.encode("admin123"));
-            admin.setEmail("admin@hotel.com");
-            admin.setRole("ADMIN");
-            userRepository.save(admin);
-            System.out.println("Default admin user created: username=admin, password=admin123, email=admin@hotel.com");
-        }
+        // Default admin logic removed as per user request.
+        // Admins will now be created via the public registration endpoint.
     }
 }

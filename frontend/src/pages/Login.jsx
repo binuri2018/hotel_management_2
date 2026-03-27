@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../services/authService';
 
 const Login = () => {
@@ -75,8 +75,11 @@ const Login = () => {
           </button>
         </form>
 
-        <p className="text-center text-sm text-gray-500 mt-4">
-          Default: admin / admin123
+        <p className="text-center text-sm text-gray-600 mt-4">
+          Need an admin account?{' '}
+          <Link to="/register" className="text-blue-600 hover:text-blue-800 font-semibold">
+            Register here
+          </Link>
         </p>
       </div>
     </div>
