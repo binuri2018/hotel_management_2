@@ -1,0 +1,2 @@
+CREATE DATABASE IF NOT EXISTS hotel_db;
+USE hotel_db;

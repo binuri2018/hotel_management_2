@@ -42,7 +42,7 @@ const CustomerList = () => {
         await deleteCustomer(id);
         fetchCustomers();
       } catch (error) {
-        alert('Error deleting customer');
+        alert('Error deleting customer: ' + (error.response?.data?.message || error.message));
       }
     }
   };

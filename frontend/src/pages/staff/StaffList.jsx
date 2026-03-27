@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import staffService from '../../services/staffService';
 
 const StaffList = () => {
@@ -7,6 +7,7 @@ const StaffList = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchUsers();
@@ -94,8 +95,14 @@ const StaffList = () => {
                     </span>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm">
+                    <button
+                      onClick={() => navigate(`/staff/edit/${user.id}`)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs transition mr-2"
+                    >
+                      Edit
+                    </button>
                     {deleteConfirm === user.id ? (
-                      <div className="flex gap-2">
+                      <div className="inline-flex gap-2">
                         <button
                           onClick={() => handleDelete(user.id)}
                           className="bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded text-xs"

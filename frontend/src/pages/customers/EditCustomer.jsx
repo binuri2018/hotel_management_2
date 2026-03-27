@@ -21,7 +21,8 @@ const EditCustomer = () => {
   const fetchCustomer = async () => {
     try {
       const response = await getCustomerById(id);
-      setFormData(response.data);
+      const { name, email, phone, address } = response.data;
+      setFormData({ name: name || '', email: email || '', phone: phone || '', address: address || '' });
     } catch (error) {
       alert('Error fetching customer');
     } finally {

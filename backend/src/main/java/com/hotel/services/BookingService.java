@@ -70,6 +70,41 @@ public class BookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found with id: " + id));
 
+        boolean roomChanged = false;
+
+        // Update customer if changed
+        if (bookingDetails.getCustomer() != null && bookingDetails.getCustomer().getId() != null) {
+            if (!bookingDetails.getCustomer().getId().equals(booking.getCustomer().getId())) {
+                Customer newCustomer = customerRepository.findById(bookingDetails.getCustomer().getId())
+                        .orElseThrow(() -> new RuntimeException("Customer not found"));
+                booking.setCustomer(newCustomer);
+            }
+        }
+
+        // Update room if changed
+        if (bookingDetails.getRoom() != null && bookingDetails.getRoom().getId() != null) {
+            if (!bookingDetails.getRoom().getId().equals(booking.getRoom().getId())) {
+                Room newRoom = roomRepository.findById(bookingDetails.getRoom().getId())
+                        .orElseThrow(() -> new RuntimeException("Room not found"));
+
+                if (!"Available".equals(newRoom.getStatus())) {
+                    throw new RuntimeException("Selected room is not available");
+                }
+
+                // Release old room
+                Room oldRoom = booking.getRoom();
+                oldRoom.setStatus("Available");
+                roomRepository.save(oldRoom);
+
+                // Occupy new room
+                newRoom.setStatus("Occupied");
+                roomRepository.save(newRoom);
+
+                booking.setRoom(newRoom);
+                roomChanged = true;
+            }
+        }
+
         // Update dates if changed
         if (bookingDetails.getCheckInDate() != null) {
             booking.setCheckInDate(bookingDetails.getCheckInDate());
@@ -78,8 +113,8 @@ public class BookingService {
             booking.setCheckOutDate(bookingDetails.getCheckOutDate());
         }
 
-        // Recalculate total price if dates changed
-        if (bookingDetails.getCheckInDate() != null || bookingDetails.getCheckOutDate() != null) {
+        // Recalculate total price if dates or room changed
+        if (bookingDetails.getCheckInDate() != null || bookingDetails.getCheckOutDate() != null || roomChanged) {
             long nights = ChronoUnit.DAYS.between(booking.getCheckInDate(), booking.getCheckOutDate());
             if (nights <= 0) {
                 throw new RuntimeException("Check-out date must be after check-in date");

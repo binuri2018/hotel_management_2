@@ -28,7 +28,7 @@ const RoomsList = () => {
         await deleteRoom(id);
         fetchRooms();
       } catch (error) {
-        alert('Error deleting room');
+        alert('Error deleting room: ' + (error.response?.data?.message || error.message));
       }
     }
   };

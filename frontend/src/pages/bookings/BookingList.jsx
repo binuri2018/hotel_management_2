@@ -28,7 +28,7 @@ const BookingList = () => {
         await deleteBooking(id);
         fetchBookings();
       } catch (error) {
-        alert('Error deleting booking');
+        alert('Error deleting booking: ' + (error.response?.data?.message || error.message));
       }
     }
   };

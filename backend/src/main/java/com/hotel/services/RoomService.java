@@ -1,6 +1,7 @@
 package com.hotel.services;
 
 import com.hotel.models.Room;
+import com.hotel.repositories.BookingRepository;
 import com.hotel.repositories.RoomRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,9 @@ import java.util.Optional;
 public class RoomService {
     @Autowired
     private RoomRepository roomRepository;
+
+    @Autowired
+    private BookingRepository bookingRepository;
 
     public List<Room> getAllRooms() {
         return roomRepository.findAll();
@@ -41,6 +45,12 @@ public class RoomService {
     public void deleteRoom(Long id) {
         Room room = roomRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Room not found with id: " + id));
+
+        // Check for existing bookings
+        if (!bookingRepository.findByRoomId(id).isEmpty()) {
+            throw new RuntimeException("Cannot delete room with existing bookings. Please delete or reassign the bookings first.");
+        }
+
         roomRepository.delete(room);
     }
 

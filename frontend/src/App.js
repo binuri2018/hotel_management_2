@@ -21,6 +21,7 @@ import AddBooking from './pages/bookings/AddBooking';
 import EditBooking from './pages/bookings/EditBooking';
 import StaffList from './pages/staff/StaffList';
 import AddStaff from './pages/staff/AddStaff';
+import EditStaff from './pages/staff/EditStaff';
 
 // MUI Theme
 const theme = createTheme({
@@ -77,6 +78,7 @@ function App() {
                         {/* Admin-only routes */}
                         <Route path="/staff" element={<AdminRoute><StaffList /></AdminRoute>} />
                         <Route path="/staff/add" element={<AdminRoute><AddStaff /></AdminRoute>} />
+                        <Route path="/staff/edit/:id" element={<AdminRoute><EditStaff /></AdminRoute>} />
                         <Route path="/" element={<Navigate to="/dashboard" replace />} />
                       </Routes>
                     </Box>
